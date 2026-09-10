@@ -1,4 +1,4 @@
-# Calvin
+# 42.LUXURY
 
 A full-screen, monospaced grid notebook with a compact, expandable tangerine tool panel. Built with vanilla JavaScript and Canvas, with Vite for development and static production builds. No runtime dependencies, accounts, tracking, external fonts, or backend.
 
