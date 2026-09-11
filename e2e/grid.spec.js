@@ -125,6 +125,39 @@ test('mobile viewport keeps margins and reveals cursor after keyboard-sized resi
   expect(panel.y + panel.height).toBeLessThanOrEqual(440);
 });
 
+test('home and end navigation keys work correctly', async ({ page }) => {
+  await page.goto('/');
+  await clickCell(page, 2, 3);
+  await page.keyboard.type('Hello');
+  await waitForSave(page);
+  // Cursor is now at column 7, row 3
+  await page.keyboard.press('Home');
+  // Cursor should be at column 0, row 3
+  await waitForSave(page);
+  let data = await saved(page);
+  expect(data.draft.cursor).toEqual({ col: 0, row: 3 });
+  
+  await page.keyboard.press('End');
+  // Cursor should be at column 6 (rightmost occupied cell), row 3
+  await waitForSave(page);
+  data = await saved(page);
+  expect(data.draft.cursor).toEqual({ col: 6, row: 3 });
+  
+  // Test with empty row
+  await clickCell(page, 2, 5);
+  await page.keyboard.press('End');
+  // Cursor should be at column 0 (empty row)
+  await waitForSave(page);
+  data = await saved(page);
+  expect(data.draft.cursor).toEqual({ col: 0, row: 5 });
+  
+  await page.keyboard.press('Home');
+  // Cursor should be at column 0
+  await waitForSave(page);
+  data = await saved(page);
+  expect(data.draft.cursor).toEqual({ col: 0, row: 5 });
+});
+
 test('scrolling expands canvas without changing existing coordinates', async ({ page }) => {
   await page.goto('/');
   await clickCell(page, 0, 0);
