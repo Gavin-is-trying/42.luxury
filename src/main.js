@@ -240,15 +240,16 @@ function dispatch(action) {
 
 function updateAppearance() {
   theme = resolveAppearance(state.draft.appearance);
-  document.documentElement.style.setProperty('--paper', theme.background);
-  document.documentElement.style.setProperty('--ink', theme.text);
-  document.documentElement.style.setProperty('--muted', theme.isDark ? '#a0a0a0' : '#686868');
-  document.documentElement.style.colorScheme = theme.isDark ? 'dark' : 'light';
-  $('meta[name="theme-color"]').content = theme.background;
-  
-  // Ensure the body background updates properly for true dark/light mode
-  document.body.style.background = theme.background;
+  const root = document.documentElement;
+  root.style.setProperty('--paper', theme.background);
+  root.style.setProperty('--ink', theme.text);
+  root.style.setProperty('--muted', theme.isDark ? '#a0a0a0' : '#686868');
+  root.style.colorScheme = theme.isDark ? 'dark' : 'light';
+  root.style.backgroundColor = theme.background;
+  root.style.color = theme.text;
+  document.body.style.backgroundColor = theme.background;
   document.body.style.color = theme.text;
+  $('meta[name="theme-color"]').content = theme.background;
   
   const { mode } = state.draft.appearance;
   document.querySelectorAll('[data-mode]').forEach((button) => {
