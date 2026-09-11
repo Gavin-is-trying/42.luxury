@@ -46,3 +46,4 @@ jobs:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         with:
           model: openrouter/qwen/qwen3-coder
+          share: false
