@@ -84,6 +84,22 @@ test('custom colors persist, launcher collapses, and Escape leaves editing', asy
   await expect(page.locator('#launcher-panel')).toBeVisible();
 });
 
+test('light and dark modes apply their background and text colors outside and inside the grid', async ({ page }) => {
+  await page.goto('/');
+
+  for (const [mode, color] of [['dark', 'rgb(0, 0, 0)'], ['light', 'rgb(255, 255, 255)']]) {
+    await page.locator(`[data-mode="${mode}"]`).click();
+    await expect(page.locator('html')).toHaveCSS('background-color', color);
+    await expect(page.locator('body')).toHaveCSS('background-color', color);
+    await expect(page.locator('body')).toHaveCSS('color', mode === 'dark' ? 'rgb(255, 255, 255)' : 'rgb(0, 0, 0)');
+    expect(await page.locator('#grid-canvas').evaluate((canvas) => {
+      const context = canvas.getContext('2d');
+      const ratio = window.devicePixelRatio || 1;
+      return Array.from(context.getImageData(Math.floor(12 * ratio), Math.floor(16 * ratio), 1, 1).data);
+    })).toEqual(mode === 'dark' ? [0, 0, 0, 255] : [255, 255, 255, 255]);
+  }
+});
+
 test('multiline paste and composition commit characters once', async ({ page }) => {
   await page.goto('/');
   await clickCell(page, 2, 2);
