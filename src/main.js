@@ -422,7 +422,7 @@ input.addEventListener('keydown', (event) => {
     Enter: { type: 'enter' }, Tab: { type: 'tab' }, Backspace: { type: 'backspace' },
     Delete: { type: 'delete' }, ArrowLeft: { type: 'move', dx: -1, dy: 0 },
     ArrowRight: { type: 'move', dx: 1, dy: 0 }, ArrowUp: { type: 'move', dx: 0, dy: -1 },
-    ArrowDown: { type: 'move', dx: 0, dy: 1 },
+    ArrowDown: { type: 'move', dx: 0, dy: 1 }, Home: { type: 'home' }, End: { type: 'end' },
   };
   if (event.key === 'Escape') {
     event.preventDefault();

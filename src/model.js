@@ -157,12 +157,30 @@ export function applyInput(draft, action) {
       next.cursor.col = coordinate(next.cursor.col + finiteDelta(action.dx));
       next.cursor.row = coordinate(next.cursor.row + finiteDelta(action.dy));
       break;
+    case 'home':
+      next.cursor.col = 0;
+      break;
+    case 'end':
+      const rightmostCol = findRightmostCellInRow(next.cells, next.cursor.row);
+      next.cursor.col = rightmostCol >= 0 ? rightmostCol : 0;
+      break;
   }
   return next;
 }
 
 function finiteDelta(value) {
   return typeof value === 'number' && Number.isFinite(value) ? Math.trunc(value) : 0;
+}
+
+function findRightmostCellInRow(cells, row) {
+  let maxCol = -1;
+  for (const key of Object.keys(cells)) {
+    const [col, cellRow] = key.split(',').map(Number);
+    if (cellRow === row && col > maxCol) {
+      maxCol = col;
+    }
+  }
+  return maxCol;
 }
 
 export function finishDraft(draft, now = new Date(), id = globalThis.crypto.randomUUID()) {

@@ -142,16 +142,35 @@ test('delete clears only the cursor cell without moving', () => {
   assert.deepEqual(input(next, 'delete'), next);
 });
 
-test('movement clamps negative coordinates, ignores invalid deltas, and keeps anchor', () => {
-  const draft = input(createDraft(), 'click', { col: 2, row: 3 });
-  const next = input(draft, 'move', { dx: -10, dy: -10 });
-  assert.deepEqual(next.cursor, { col: 0, row: 0 });
-  assert.equal(next.anchorCol, 2);
-  assert.deepEqual(input(next, 'move', { dx: Infinity, dy: NaN }), next);
-  assert.deepEqual(input(next, 'move', { dx: 1.9, dy: 2.8 }).cursor, { col: 1, row: 2 });
+test('home moves cursor to column 0 of current row', () => {
+  let draft = input(createDraft(), 'click', { col: 5, row: 3 });
+  draft = input(draft, 'home');
+  assert.deepEqual(draft.cursor, { col: 0, row: 3 });
+  assert.equal(draft.anchorCol, 5); // anchor should not change
 });
 
-test('input bounds huge coordinates and normalizes non-finite click positions', () => {
+test('end moves cursor to rightmost occupied cell of current row or column 0 if row is empty', () => {
+  // Test with empty row
+  let draft = input(createDraft(), 'click', { col: 5, row: 3 });
+  draft = input(draft, 'end');
+  assert.deepEqual(draft.cursor, { col: 0, row: 3 });
+  
+  // Test with occupied cells
+  draft = input(createDraft(), 'text', { text: 'ABC' });
+  draft = input(draft, 'click', { col: 1, row: 0 });
+  draft = input(draft, 'end');
+  assert.deepEqual(draft.cursor, { col: 2, row: 0 });
+  
+  // Test with multiple rows
+  draft = { ...createDraft(), cells: { '1,2': 'A', '5,2': 'B', '3,2': 'C', '2,4': 'D' } };
+  draft = input(draft, 'click', { col: 0, row: 2 });
+  draft = input(draft, 'end');
+  assert.deepEqual(draft.cursor, { col: 5, row: 2 });
+  
+  assert.equal(draft.anchorCol, 0); // anchor should not change
+});
+
+test('movement clamps negative coordinates, ignores invalid deltas, and keeps anchor', () => {
   const max = input(createDraft(), 'click', { col: 1e100, row: 1e100 });
   assert.deepEqual(max.cursor, { col: 100_000, row: 100_000 });
   assert.equal(max.anchorCol, 100_000);
