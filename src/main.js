@@ -245,6 +245,11 @@ function updateAppearance() {
   document.documentElement.style.setProperty('--muted', theme.isDark ? '#a0a0a0' : '#686868');
   document.documentElement.style.colorScheme = theme.isDark ? 'dark' : 'light';
   $('meta[name="theme-color"]').content = theme.background;
+  
+  // Ensure the body background updates properly for true dark/light mode
+  document.body.style.background = theme.background;
+  document.body.style.color = theme.text;
+  
   const { mode } = state.draft.appearance;
   document.querySelectorAll('[data-mode]').forEach((button) => {
     button.setAttribute('aria-pressed', String(button.dataset.mode === mode));
